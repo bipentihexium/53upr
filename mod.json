@@ -1,9 +1,9 @@
 {
-    "displayName": "Mod Template",
-    "description": "Mindustry Java mod template, complete with EntityAnno and syntax downgrader integration.",
+    "displayName": "53-UPR",
+    "description": "This mod aims to capture all of the custom content from the 53-UPR Mindustry Reddit series.",
     "version": "v1.0",
     "minGameVersion": "146",
-    "author": "You",
+    "author": "Code by overdramaticpanromantic, ideas by Plenty_Tax_5892.",
     "java": true,
-    "main": "template.ModTemplate"
+    "main": "superMod.SuperMod"
 }

@@ -1,9 +1,9 @@
-package template;
+package superMod;
 
 import mindustry.mod.*;
-import template.gen.*;
+import superMod.gen.*;
 
-public class ModTemplate extends Mod{
+public class SuperMod extends Mod{
     @Override
     public void loadContent(){
         EntityRegistry.register();
