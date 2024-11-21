@@ -2,24 +2,23 @@ package superMod.content;
 
 import arc.graphics.Color;
 import arc.struct.EnumSet;
+import arc.struct.Seq;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
-import mindustry.entities.pattern.ShootBarrel;
-import mindustry.entities.pattern.ShootSpread;
+import mindustry.entities.pattern.*;
 import mindustry.gen.Sounds;
-import mindustry.graphics.Layer;
-import mindustry.graphics.Pal;
-import mindustry.type.Category;
-import mindustry.type.ItemStack;
-import mindustry.type.LiquidStack;
+import mindustry.graphics.*;
+import mindustry.type.*;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.*;
-import mindustry.world.blocks.distribution.MassDriver;
-import mindustry.world.blocks.environment.SteamVent;
-import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.blocks.distribution.*;
+import mindustry.world.blocks.environment.*;
+import mindustry.world.blocks.production.*;
+import mindustry.world.blocks.units.*;
+import mindustry.world.blocks.payloads.*;
 import mindustry.world.consumers.ConsumeLiquid;
 import mindustry.world.draw.*;
 import mindustry.world.meta.Attribute;
@@ -29,16 +28,27 @@ import mindustry.world.meta.Env;
 public class SuperBlocks extends Blocks {
     public static Block
     // environment
+    blightsand, blightsandWall,
     stoneVent, daciteVent, mossyVent, sandVent, darksandVent,
+    shallowHydroblight, deepHydroblight,
     // turrets
     blightedScatter, blightedWave, blightedLancer, blightedSalvo, blightedTsunami, blightedFuse, blightedRipple, blightedCyclone, blightedBreach,
     // distribution
     warpDriver,
     // crafting
-    phasefoamSynthesizer, inertialPhaseDisentangler;
+    phasefoamSynthesizer, inertialPhaseDisentangler,
+    // payload
+    soldierReassembler, primaryReassemblerModule;
 
     public static void load() {
         // environment
+        blightsand = new Floor("blightsand"){{
+            variants = 3;
+            speedMultiplier = 0.9f;
+        }};
+        blightsandWall = new StaticWall("blightsand-wall"){{
+            variants = 2;
+        }};
         stoneVent = new SteamVent("stone-vent"){{
             parent = blendGroup = Blocks.stone;
             attributes.set(Attribute.steam, 1f);
@@ -58,6 +68,29 @@ public class SuperBlocks extends Blocks {
         darksandVent = new SteamVent("darksand-vent"){{
             parent = blendGroup = Blocks.darksand;
             attributes.set(Attribute.steam, 1f);
+        }};
+        shallowHydroblight = new Floor("shallow-hydroblight"){{
+            speedMultiplier = 0.45f;
+            variants = 2;
+            status = SuperStatus.contaminated;
+            statusDuration = 999999999f;
+            liquidDrop = SuperFluids.hydroblight;
+            isLiquid = true;
+            cacheLayer = CacheLayer.water;
+            albedo = 0.8f;
+            supportsOverlay = true;
+        }};
+        deepHydroblight = new Floor("deep-hydroblight"){{
+            speedMultiplier = 0.3f;
+            variants = 2;
+            status = SuperStatus.contaminated;
+            statusDuration = 999999999f;
+            drownTime = 180f;
+            liquidDrop = SuperFluids.hydroblight;
+            isLiquid = true;
+            cacheLayer = CacheLayer.water;
+            albedo = 0.8f;
+            supportsOverlay = true;
         }};
         // turrets
         // NOTE: blighted turrets are all reskins of vanilla turrets
@@ -799,6 +832,41 @@ public class SuperBlocks extends Blocks {
             consumePower(8f);
             consumeItem(Items.phaseFabric, 3);
             consumeLiquid(SuperFluids.phasefoam, 0.2f);
+        }};
+        // payload
+        ((Constructor) Blocks.constructor).filter.set(Seq.with(
+            Blocks.tungstenWall,
+            Blocks.tungstenWallLarge,
+            Blocks.berylliumWallLarge,
+            Blocks.carbideWallLarge,
+            Blocks.reinforcedSurgeWallLarge,
+            Blocks.reinforcedLiquidContainer,
+            Blocks.reinforcedContainer,
+            Blocks.beamNode
+        ));
+        ((Constructor) Blocks.largeConstructor).filter.set(Seq.with(
+            Blocks.diffuse,
+            Blocks.sublimate
+        ));
+        soldierReassembler = new UnitAssembler("soldier-reassembler"){{
+            requirements(Category.units, ItemStack.with(Items.tungsten, 500, Items.silicon, 380, Items.carbide, 120, Items.phaseFabric, 85));
+            size = 5;
+            areaSize = 13;
+
+            plans.add(
+                new AssemblerUnitPlan(SuperUnits.urge, 1200f, PayloadStack.list(UnitTypes.dagger, 3, Blocks.tungstenWall, 6, Blocks.diffuse, 1)),
+                new AssemblerUnitPlan(SuperUnits.exhort, 1800f, PayloadStack.list(UnitTypes.mace, 2, Blocks.tungstenWallLarge, 2, Blocks.sublimate, 2))
+            );
+
+            consumePower(4f);
+            consumeLiquid(SuperFluids.phaseEnergy, 0.2f);
+        }};
+        primaryReassemblerModule = new UnitAssemblerModule("primary-reassembler-module"){{
+            requirements(Category.units, ItemStack.with(Items.lead, 350, Items.tungsten, 235, Items.phaseFabric, 70));
+            size = 3;
+            tier = 1;
+
+            consumePower(4f);
         }};
     }
 }
